@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gearbox (Propeller Turbine)
+* source:	https://sketchfab.com/3d-models/gearbox-propeller-turbine-9c5f775f4c4b447496c9846ce7638b4b
+* author:	T-FLEX CAD ST (Free) (https://sketchfab.com/tflexcad)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gearbox (Propeller Turbine)" (https://sketchfab.com/3d-models/gearbox-propeller-turbine-9c5f775f4c4b447496c9846ce7638b4b) by T-FLEX CAD ST (Free) (https://sketchfab.com/tflexcad) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
