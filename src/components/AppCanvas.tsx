@@ -1,6 +1,6 @@
 import {observer} from "mobx-react-lite";
 import React, {Suspense, useRef, useEffect, useState} from "react";
-import {Canvas, useLoader} from "@react-three/fiber";
+import {Canvas, useLoader, useThree} from "@react-three/fiber";
 import {Bounds, OrbitControls, GizmoHelper, GizmoViewport, useGLTF} from "@react-three/drei";
 import {EffectComposer, Outline, Select, Selection, SMAA, SSAO} from "@react-three/postprocessing";
 import Model from "./Model";
@@ -11,11 +11,36 @@ import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
+import html2canvas from "html2canvas";
 
 interface RenderTree {
     id: string;
     name: string;
     children?: readonly RenderTree[];
+}
+interface CaptureProps {
+    capture: boolean;
+    setCapture(value: boolean): void;
+}
+
+const Capture = ({ ...props}: CaptureProps) => {
+    const gl = useThree((state) => state.gl)
+
+    const screenshot = () => {
+        const link = document.createElement('a')
+        link.setAttribute('download', 'canvas.png')
+        link.setAttribute('href', gl.domElement.toDataURL('image/png').replace('image/png', 'image/octet-stream'))
+        link.click()
+    }
+
+    useEffect(() => {
+        if (props.capture) {
+            screenshot();
+            props.setCapture(false);
+        }
+    }, [props.capture])
+
+    return null
 }
 
 function getMeshTree(childArr: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[], configMeshSelect: { [x: string]: boolean; }): RenderTree[] {
@@ -63,6 +88,8 @@ const AppCanvas = observer(() => {
 
     let [configMeshSelect, setConfigMeshSelect] = useState<{ [x: string]: boolean; }>({});
     let [selectedMesh, setSelectedMesh] = useState<string>('')
+
+    let [capture, setCapture] = useState<boolean>(false)
 
     let objectData: THREE.Object3D|null = null;
     if (isGltfOrGlbFile(mainFileLink)) {
@@ -146,6 +173,10 @@ const AppCanvas = observer(() => {
         }
     }, [selectedMesh])
 
+    const exportImage = (event: any) => {
+        setCapture(true);
+    }
+
     return (
         <div className="app-canvas" style={{position: "relative"}}>
             <div style={{
@@ -157,6 +188,8 @@ const AppCanvas = observer(() => {
                 zIndex: "1",
                 padding: "20px"
             }}>
+                <button onClick={exportImage}>Capture screen</button>
+                <br/>
                 {meshTreeData && defaultExpandTree.length &&
                     <TreeView
                         aria-label="rich object"
@@ -171,7 +204,7 @@ const AppCanvas = observer(() => {
                     </TreeView>
                 }
             </div>
-            <Canvas dpr={[1, 2]} ref={canvasRef}>
+            <Canvas dpr={[1, 2]} ref={canvasRef} gl={{ preserveDrawingBuffer: true }}>
                 <color attach="background" args={['#f5efe6']} />
                 <pointLight position={[10, 10, 10]} />
                 <ambientLight intensity={0.75} />
@@ -199,6 +232,7 @@ const AppCanvas = observer(() => {
                 {/*    <GizmoViewport axisColors={["hotpink", "aquamarine", "#3498DB"]} labelColor="black" />*/}
                 {/*</GizmoHelper>*/}
                 <OrbitControls makeDefault />
+                <Capture capture={capture} setCapture={setCapture} />
             </Canvas>
 
         </div>
