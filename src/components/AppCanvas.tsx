@@ -1,7 +1,7 @@
 import {observer} from "mobx-react-lite";
 import React, {Suspense, useRef, useEffect, useState} from "react";
-import {Canvas, useLoader, useThree} from "@react-three/fiber";
-import {Bounds, OrbitControls, GizmoHelper, GizmoViewport, useGLTF} from "@react-three/drei";
+import {Canvas, useLoader, useThree, useFrame} from "@react-three/fiber";
+import {Bounds, OrbitControls, GizmoHelper, GizmoViewport, useGLTF, Environment} from "@react-three/drei";
 import {EffectComposer, Outline, Select, Selection, SMAA, SSAO} from "@react-three/postprocessing";
 import Model from "./Model";
 import * as THREE from "three";
@@ -12,6 +12,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import html2canvas from "html2canvas";
+import ThreeAction from "./ThreeAction";
 
 interface RenderTree {
     id: string;
@@ -78,13 +79,19 @@ function isGltfOrGlbFile(fileLink: string): boolean {
 }
 
 const AppCanvas = observer(() => {
+    let [speed, setSpeed] = useState<string>('50');
     const canvasRef = useRef(null);
     // const cameraRef = useRef(null);
 
-    const mainFileLink = 'https://d3bagkewb4pdr3.cloudfront.net/scene.gltf';
-    const materialFileLink = '';
+    // const mainFileLink = 'https://d3bagkewb4pdr3.cloudfront.net/scene.gltf';
+    // const mainFileLink = 'https://d3bagkewb4pdr3.cloudfront.net/car.glb';
+    // const materialFileLink = '';
+
     // const mainFileLink = 'https://d3bagkewb4pdr3.cloudfront.net/file/1.obj';
     // const materialFileLink = 'https://d3bagkewb4pdr3.cloudfront.net/file/1.mtl';
+
+    const mainFileLink = '/poc3d/scene.gltf';
+    const materialFileLink = '';
 
     let [configMeshSelect, setConfigMeshSelect] = useState<{ [x: string]: boolean; }>({});
     let [selectedMesh, setSelectedMesh] = useState<string>('')
@@ -103,6 +110,7 @@ const AppCanvas = observer(() => {
     }
     let [meshTreeData, setMeshTreeData] = useState<RenderTree|null>(null)
     let [defaultExpandTree, setDefaultExpandTree] = useState<string[]>([])
+
     useEffect(() => {
         if (objectData) {
             let cloneObj = Object.assign({}, configMeshSelect)
@@ -153,7 +161,7 @@ const AppCanvas = observer(() => {
     }
 
     const handleClickOnMesh = (e: any, mesh: THREE.Object3D) => {
-        if (mesh?.name) {
+        if (mesh?.name && mesh.name === 'BigGear') {
             e.stopPropagation()
             let meshID = mesh.uuid
             if (meshID !== selectedMesh) {
@@ -189,6 +197,7 @@ const AppCanvas = observer(() => {
                 padding: "20px"
             }}>
                 <button onClick={exportImage}>Capture screen</button>
+                <input type="number" onChange={(e) => {setSpeed(e.target.value)}} value={speed} />
                 <br/>
                 {meshTreeData && defaultExpandTree.length &&
                     <TreeView
@@ -204,18 +213,19 @@ const AppCanvas = observer(() => {
                     </TreeView>
                 }
             </div>
-            <Canvas dpr={[1, 2]} ref={canvasRef} gl={{ preserveDrawingBuffer: true }}>
-                <color attach="background" args={['#f5efe6']} />
-                <pointLight position={[10, 10, 10]} />
+            <Canvas dpr={[1, 2]} ref={canvasRef} gl={{ preserveDrawingBuffer: true }}
+                    style={{background: 'linear-gradient(180deg, #194C72 0%, #021417 100%)'}}
+            >
+                {/*<pointLight position={[10, 10, 10]} />*/}
                 <ambientLight intensity={0.75} />
-                <spotLight angle={1} position={[1.8, 0.8, 1.5]} intensity={0.5} />
+                {/*<spotLight angle={1} position={[1.8, 0.8, 1.5]} intensity={0.5} />*/}
                 <Selection >
                     <EffectComposer multisampling={0} autoClear={false}>
-                        <SSAO radius={0.05} intensity={150} luminanceInfluence={0.5} color="black" />
+                        {/*<SSAO radius={0.05} intensity={150} luminanceInfluence={0.5} color="black" />*/}
                         <Outline visibleEdgeColor={0x15C5E8} hiddenEdgeColor={0x15C5E8} blur edgeStrength={100} />
                         <SMAA />
                     </EffectComposer>
-                    <Bounds fit clip observe damping={6} margin={2}>
+                    <Bounds fit clip damping={6} margin={2}>
                         <Suspense fallback={null}>
                             {objectData &&
                                 <Model
@@ -223,11 +233,15 @@ const AppCanvas = observer(() => {
                                     configMeshSelect={configMeshSelect}
                                     selectedMesh={selectedMesh}
                                     handleClickOnMesh={handleClickOnMesh}
+                                    speed={speed}
                                 />
                             }
                         </Suspense>
                     </Bounds>
                 </Selection>
+                <Environment
+                    preset='city'
+                />
                 {/*<GizmoHelper alignment="bottom-right">*/}
                 {/*    <GizmoViewport axisColors={["hotpink", "aquamarine", "#3498DB"]} labelColor="black" />*/}
                 {/*</GizmoHelper>*/}

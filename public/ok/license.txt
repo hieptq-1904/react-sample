@@ -1,0 +1,11 @@
+Model Information:
+* title:	Industrial Stuff - Low poly prop set
+* source:	https://sketchfab.com/3d-models/industrial-stuff-low-poly-prop-set-5d97c82abf544dbc982364178075b318
+* author:	Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Industrial Stuff - Low poly prop set" (https://sketchfab.com/3d-models/industrial-stuff-low-poly-prop-set-5d97c82abf544dbc982364178075b318) by Daniel Zhabotinsky (https://sketchfab.com/DanielZhabotinsky) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
